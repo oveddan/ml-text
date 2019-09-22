@@ -79,7 +79,7 @@ async function main() {
   }
 
   // Load the model.
-  const model = await tf.loadModel(`file://${args.modelJSONPath}`);
+  const model = await tf.loadLayersModel(`file://${args.modelJSONPath}`);
 
   const sampleLen = model.inputs[0].shape[1];
 
