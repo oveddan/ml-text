@@ -138,7 +138,7 @@ async function main() {
   const [seed, seedIndices] = textData.getRandomSlice();
   console.log(`Seed text:\n"${seed}"\n`);
 
-  const DISPLAY_TEMPERATURES = [0, 0.25, 0.5, 0.75];
+  const DISPLAY_TEMPERATURES = [0.25, 0.5, 0.75];
 
   let epochCount = 0;
   let startTime = 0;
@@ -156,13 +156,15 @@ async function main() {
           console.log('time to complete epoch:', (new Date().getTime() - startTime) / 1000);
         },
         onTrainEnd: async () => {
-          DISPLAY_TEMPERATURES.forEach(async temperature => {
-            const generated = await generateText(
-                model, textData, seedIndices, args.displayLength, temperature);
-            console.log(
-                `Generated text (temperature=${temperature}):\n` +
-                `"${generated}"\n`);
-          });
+          if (epochCount % 3 === 0) {
+            DISPLAY_TEMPERATURES.forEach(async temperature => {
+              const generated = await generateText(
+                  model, textData, seedIndices, args.displayLength, temperature);
+              console.log(
+                  `Generated text (temperature=${temperature}):\n` +
+                  `"${generated}"\n`);
+            });
+          }
         }
       });
 

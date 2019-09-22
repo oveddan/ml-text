@@ -21,7 +21,8 @@
     "link-local": "yalc link",
     "test": "babel-node run_tests.js",
     "train": "babel-node train_node.js",
-    "convert_facebook_posts": "babel-node convert_facebook_posts.js"
+    "convert_facebook_posts": "babel-node convert_facebook_posts.js",
+    "convert_blog_posts": "babel-node convert_blog_posts.js"
   },
   "devDependencies": {
     "@tensorflow/tfjs-node": "1.2.3",
