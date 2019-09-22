@@ -93,6 +93,11 @@ function parseArgs() {
     type: 'string',
     help: 'Path to which the model will be saved (optional)'
   });
+  parser.addArgument('--debugAtEpoch', {
+    type: 'int',
+    defaultValue: 1,
+    help: 'Test inference every x epochs'
+  });
   parser.addArgument('--lstmLayerSize', {
     type: 'string',
     defaultValue: '128,128',
@@ -136,6 +141,7 @@ async function main() {
 
   // Get a seed text for display in the course of model training.
   const [seed, seedIndices] = textData.getRandomSlice();
+  const { debugAtEpoch } = args;
   console.log(`Seed text:\n"${seed}"\n`);
 
   const DISPLAY_TEMPERATURES = [0.25, 0.5, 0.75];
@@ -156,7 +162,7 @@ async function main() {
           console.log('time to complete epoch:', (new Date().getTime() - startTime) / 1000);
         },
         onTrainEnd: async () => {
-          if (epochCount % 3 === 0) {
+          if ((epochCount - 1) % debugAtEpoch === 0) {
             DISPLAY_TEMPERATURES.forEach(async temperature => {
               const generated = await generateText(
                   model, textData, seedIndices, args.displayLength, temperature);
