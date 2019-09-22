@@ -32,7 +32,7 @@ export const TEXT_DATA_URLS = {
   },
   'shakespeare': {
     url:
-        'https://storage.googleapis.com/tfjs-examples/lstm-text-generation/data/t8.shakespeare.txt',
+        'https://cs.stanford.edu/people/karpathy/char-rnn/shakespear.txt',
     needle: 'Shakespeare'
   },
   'tfjs-code': {

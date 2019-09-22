@@ -32,10 +32,10 @@ function parseArgs() {
   const parser = argparse.ArgumentParser({
     description: 'Train an lstm-text-generation model.'
   });
-  parser.addArgument('textDatasetName', {
+  parser.addArgument('textFile', {
     type: 'string',
-    choices: Object.keys(TEXT_DATA_URLS),
-    help: 'Name of the text dataset'
+    // choices: Object.keys(TEXT_DATA_URLS),
+    help: 'Path of corpus file'
   });
   parser.addArgument('--gpu', {
     action: 'storeTrue',
@@ -107,9 +107,7 @@ async function main() {
   }
 
   // Create the text data object.
-  const textDataURL = TEXT_DATA_URLS[args.textDatasetName].url;
-  const localTextDataPath = path.join(os.tmpdir(), path.basename(textDataURL));
-  await maybeDownload(textDataURL, localTextDataPath);
+  const localTextDataPath = path.join(__dirname, 'data', args.textFile);
   const text = fs.readFileSync(localTextDataPath, {encoding: 'utf-8'});
   const textData =
       new TextData('text-data', text, args.sampleLen, args.sampleStep);
