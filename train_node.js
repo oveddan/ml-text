@@ -22,6 +22,8 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import * as tf from '@tensorflow/tfjs';
+;
 
 import * as argparse from 'argparse';
 
@@ -39,7 +41,11 @@ function parseArgs() {
   });
   parser.addArgument('--gpu', {
     action: 'storeTrue',
-    help: 'Use CUDA GPU for training.'
+    help: 'Use GPU for training.'
+  });
+  parser.addArgument('--cuda', {
+    action: 'storeTrue',
+    help: 'Use Cuda GPU for training.'
   });
   parser.addArgument('--sampleLen', {
     type: 'int',
@@ -99,12 +105,18 @@ function parseArgs() {
 async function main() {
   const args = parseArgs();
   if (args.gpu) {
-    console.log('Using GPU');
+    require('./tfjs-backend-nodegl');
+    const gl = tf.backend().getGPGPUContext().gl;
+    console.log(`  - gl.VERSION: ${gl.getParameter(gl.VERSION)}`);
+    console.log(`  - gl.RENDERER: ${gl.getParameter(gl.RENDERER)}`)
+  } else if (args.cuda) {
+    console.log('Using CUDA GPU');
     require('@tensorflow/tfjs-node-gpu');
   } else {
     console.log('Using CPU');
     require('@tensorflow/tfjs-node');
   }
+  console.log('backend:', tf.getBackend());
 
   // Create the text data object.
   const localTextDataPath = path.join(__dirname, 'data', args.textFile);
@@ -129,12 +141,19 @@ async function main() {
   const DISPLAY_TEMPERATURES = [0, 0.25, 0.5, 0.75];
 
   let epochCount = 0;
+  let startTime = 0;
   await fitModel(
       model, textData, args.epochs, args.examplesPerEpoch, args.batchSize,
       args.validationSplit, {
         onTrainBegin: async () => {
           epochCount++;
           console.log(`Epoch ${epochCount} of ${args.epochs}:`);
+        },
+        onEpochBegin: async () => {
+          startTime = new Date().getTime();
+        },
+        onEpochEnd: async () => {
+          console.log('time to complete epoch:', (new Date().getTime() - startTime) / 1000);
         },
         onTrainEnd: async () => {
           DISPLAY_TEMPERATURES.forEach(async temperature => {

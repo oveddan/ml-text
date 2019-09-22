@@ -11,6 +11,7 @@
   "dependencies": {
     "@tensorflow/tfjs": "^1.2.2",
     "@tensorflow/tfjs-vis": "^1.0.3",
+    "node-gles": "^0.0.13",
     "puppeteer": "^1.20.0"
   },
   "scripts": {
