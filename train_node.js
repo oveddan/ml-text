@@ -160,6 +160,9 @@ async function main() {
         },
         onEpochEnd: async () => {
           console.log('time to complete epoch:', (new Date().getTime() - startTime) / 1000);
+          if (args.savePath != null && args.savePath.length > 0) {
+            model.save(`file://${args.savePath}`);
+          }
         },
         onTrainEnd: async () => {
           if ((epochCount - 1) % debugAtEpoch === 0) {
