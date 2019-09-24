@@ -1,12 +1,25 @@
-# TensorFlow.js Example: Train LSTM to Generate Text
+# Machine Learning based Text Generation
 
-[See this example live!](https://storage.googleapis.com/tfjs-examples/lstm-text-generation/dist/index.html)
 
 ## Overview
 
-This example illustrates how to use TensorFlow.js to train a LSTM model to
+This tutorial will walk you through how to use text based machine-learning models to generate text in the style of some existing source text.
+
+This example illustrates how to use [TensorFlow.js](https://www.tensorflow.org/js/) to train a LSTM model to
 generate random text based on the patterns in a text corpus such as
-Nietzsche's writing or the source code of TensorFlow.js itself.
+Shakepear or your own Facebook Posts.
+
+[Let's see an example live!](https://storage.googleapis.com/tfjs-examples/lstm-text-generation/dist/index.html)
+
+## The Model
+
+### What is an RNN
+
+![RNN Diagrams](http://karpathy.github.io/assets/rnn/diags.jpeg)
+
+### How is it used
+
+### How this model works
 
 The LSTM model operates at the character level. It takes a tensor of
 shape `[numExamples, sampleLen, charSetSize]` as the input. The input is a
