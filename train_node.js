@@ -139,6 +139,8 @@ async function main() {
       textData.sampleLen(), textData.charSetSize(), lstmLayerSize);
   compileModel(model, args.learningRate);
 
+  console.log('text size', text.length);
+
   // Get a seed text for display in the course of model training.
   const [seed, seedIndices] = textData.getRandomSlice();
   const { debugAtEpoch } = args;
@@ -161,19 +163,20 @@ async function main() {
         onEpochEnd: async () => {
           console.log('time to complete epoch:', (new Date().getTime() - startTime) / 1000);
           if (args.savePath != null && args.savePath.length > 0) {
+            console.log(`saving to ${args.savePath}`);
             model.save(`file://${args.savePath}`);
           }
         },
         onTrainEnd: async () => {
-          if ((epochCount - 1) % debugAtEpoch === 0) {
-            DISPLAY_TEMPERATURES.forEach(async temperature => {
-              const generated = await generateText(
-                  model, textData, seedIndices, args.displayLength, temperature);
-              console.log(
-                  `Generated text (temperature=${temperature}):\n` +
-                  `"${generated}"\n`);
-            });
-          }
+          // if ((epochCount - 1) % debugAtEpoch === 0) {
+          //   DISPLAY_TEMPERATURES.forEach(async temperature => {
+          //     const generated = await generateText(
+          //         model, textData, seedIndices, args.displayLength, temperature);
+          //     console.log(
+          //         `Generated text (temperature=${temperature}):\n` +
+          //         `"${generated}"\n`);
+          //   });
+          // }
         }
       });
 

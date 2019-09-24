@@ -26,6 +26,8 @@ import * as argparse from 'argparse';
 
 import * as tf from '@tensorflow/tfjs';
 
+const puppeteer = require('puppeteer');
+
 import {maybeDownload, TextData, TEXT_DATA_URLS} from './data';
 import {generateText} from './model';
 
@@ -54,10 +56,6 @@ function parseArgs() {
     help: 'Temperature value to use for text generation. Higher values ' +
     'lead to more random-looking generation results.'
   });
-  parser.addArgument('--gpu', {
-    action: 'storeTrue',
-    help: 'Use CUDA GPU for training.'
-  });
   parser.addArgument('--sampleStep', {
     type: 'int',
     defaultValue: 3,
@@ -67,27 +65,35 @@ function parseArgs() {
   return parser.parseArgs();
 }
 
-async function main() {
-  const args = parseArgs();
+function loadTextData(textFile, sampleStep, model) {
+  // Create the text data object.
+  // Create the text data object.
+  const localTextDataPath = path.join(__dirname, 'data', textFile);
+  const text = fs.readFileSync(localTextDataPath, {encoding: 'utf-8'});
 
+  const sampleLen = model.inputs[0].shape[1];
+
+  const textData = new TextData('text-data', text, sampleLen, sampleStep);
+
+  return textData;
+}
+
+async function loadModelAndGenerateText(args) {
   if (args.gpu) {
-    console.log('Using GPU');
-    require('@tensorflow/tfjs-node-gpu');
+    require('./tfjs-backend-nodegl');
+    const gl = tf.backend().getGPGPUContext().gl;
+    console.log(`  - gl.VERSION: ${gl.getParameter(gl.VERSION)}`);
+    console.log(`  - gl.RENDERER: ${gl.getParameter(gl.RENDERER)}`)
   } else {
     console.log('Using CPU');
     require('@tensorflow/tfjs-node');
   }
 
-  // Load the model.
+  // Load the lstm model.
   const model = await tf.loadLayersModel(`file://${args.modelJSONPath}`);
 
-  const sampleLen = model.inputs[0].shape[1];
-
-  // Create the text data object.
-  // Create the text data object.
-  const localTextDataPath = path.join(__dirname, 'data', args.textFile);
-  const text = fs.readFileSync(localTextDataPath, {encoding: 'utf-8'});
-  const textData = new TextData('text-data', text, sampleLen, args.sampleStep);
+  // load the text data
+  const textData = loadTextData(args.textFile, args.sampleStep, model);
 
   // Get a seed text from the text data object.
   const [seed, seedIndices] = textData.getRandomSlice();
@@ -97,7 +103,58 @@ async function main() {
   const generated = await generateText(
       model, textData, seedIndices, args.genLength, args.temperature);
 
-  console.log(`Generated text:\n"${generated}"\n`);
+  return generated;
+
+}
+
+async function promptForFacebookLogin(page) {
+  await page.goto('https://www.facebook.com');
+
+  // enter email address and password
+  // give page time to load
+  console.log("ENTER YOUR USERNAME AND PASSWORD");
+
+  await page.waitFor('textarea');
+  // click on page to get rid of message
+  await page.mouse.click(1000, 1000);
+}
+
+async function main() {
+  const args = parseArgs();
+
+  const browser = await puppeteer.launch({
+    headless: false,
+    slowMo: 10
+  });
+
+  const context = await browser.createIncognitoBrowserContext();
+  const page = await context.newPage();
+
+  await page.setViewport({
+    width: 1280,
+    height: 720
+  });
+
+  await promptForFacebookLogin(page);
+
+  console.log('generating text')
+  const generatedText = await loadModelAndGenerateText(args);
+  console.log('generated text', generatedText);
+
+  // console.log('waiting for post box');
+  const postBoxSelector = 'textarea';
+  await page.waitFor(postBoxSelector);
+
+  // open the post box
+  console.log('clicking to open post box');
+  await page.click(postBoxSelector);
+
+  await page.keyboard.type(generatedText);
+
+  console.log('clicking to post');
+  // click the post button
+  await page.waitFor('[data-testid="react-composer-post-button"]');
+  await page.click('[data-testid="react-composer-post-button"]');
 }
 
 main();

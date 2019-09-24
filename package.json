@@ -12,7 +12,8 @@
     "@tensorflow/tfjs": "^1.2.2",
     "@tensorflow/tfjs-vis": "^1.0.3",
     "node-gles": "^0.0.13",
-    "puppeteer": "^1.20.0"
+    "puppeteer": "^1.20.0",
+    "striptags": "^3.1.1"
   },
   "scripts": {
     "watch": "cross-env NODE_ENV=development parcel index.html --no-hmr --open",
@@ -22,7 +23,10 @@
     "test": "babel-node run_tests.js",
     "train": "babel-node train_node.js",
     "convert_facebook_posts": "babel-node convert_facebook_posts.js",
-    "convert_blog_posts": "babel-node convert_blog_posts.js"
+    "convert_blog_posts": "babel-node convert_blog_posts.js",
+    "convert_sent_facebook_messages": "babel-node convert_sent_facebook_messages.js",
+    "post_to_facebook_lstm": "babel-node post_to_facebook_lstm.js",
+    "scrape_wiki_how": "babel-node scrape_wiki_how.js"
   },
   "devDependencies": {
     "@tensorflow/tfjs-node": "1.2.3",
