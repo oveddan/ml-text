@@ -4,6 +4,4 @@ yarn-error.log
 .cache
 dist
 data/mine
-model
 .DS_Store
-models
