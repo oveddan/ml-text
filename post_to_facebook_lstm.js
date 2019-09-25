@@ -28,12 +28,12 @@ import * as tf from '@tensorflow/tfjs';
 
 const puppeteer = require('puppeteer');
 
-import {maybeDownload, TextData, TEXT_DATA_URLS} from './data';
+import {TextData} from './data';
 import {generateText} from './model';
 
 function parseArgs() {
   const parser = argparse.ArgumentParser({
-    description: 'Train an lstm-text-generation model.'
+    description: 'Use a pre-trained lstm model to post to facebook.'
   });
   parser.addArgument('textFile', {
     type: 'string',
@@ -90,7 +90,8 @@ async function loadModelAndGenerateText(args) {
   }
 
   // Load the lstm model.
-  const model = await tf.loadLayersModel(`file://${args.modelJSONPath}`);
+  const fullModelPath = path.join(__dirname, 'models', args.modelJSONPath, '/model.json')
+  const model = await tf.loadLayersModel(`file://${fullModelPath}`);
 
   // load the text data
   const textData = loadTextData(args.textFile, args.sampleStep, model);
