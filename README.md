@@ -38,7 +38,7 @@ Now, let's generate some text:
       --genLength 250 \
       --temperature 0.6
 
-What the above command did, was use an LSTM model trained on the text in [corpus/shakespeare.txt](corpus/shakespeare.txt) to generate some text of length 250, that the model predicted which characters should come after some random text. Everything is run on your computer using Tensorflow.js in Node.
+What the above command did, was use an LSTM model trained on the text in [data/shakespeare.txt](data/shakespeare.txt) to generate some text of length 250, that the model predicted which characters should come after some random text. Everything is run on your computer using Tensorflow.js in Node.
 
 ## Trying out gpt-2 in runway.ml 
 
@@ -133,7 +133,7 @@ yarn train shakespeare.txt \
 ```
 
 - The first argument to `yarn train` (`shakespeare.txt`) specifies what text corpus to train the model on. See the console output of `yarn train --help` for a set
-  of supported text data.  It grabs the file **from the folder** `./corpus` . So if the argument `shakespeare.txt` is used, the file should be located at `./corpos/shakespeare.txt`
+  of supported text data.  It grabs the file **from the folder** `./data` . So if the argument `shakespeare.txt` is used, the file should be located at `./data/shakespeare.txt`
 - The argument `--lstmLayerSize 128,128` specifies that the next-character
   prediction model should contain two LSTM layers stacked on top of each other,
   each with 128 units.
@@ -164,7 +164,7 @@ See the console output of `yarn gen --help` for a set of instructions on how to 
 
 Now we will go through some basic examples of how to create a text corpus which can be trained on.
 
-The first step of building a text corpus of course involves gathering some text, and saving it to the folder `./corpus/`
+The first step of building a text corpus of course involves gathering some text, and saving it to the folder `./data/`
 
 One way this can be done is to scrape some webpages.  Let's try this with a sample script, scrape_wiki_how.js, which visits wikihow.com, enters a search term, opens the first 10 results, then saves the contents of each result into a text file within the folder './data/wikihow_results'
 
