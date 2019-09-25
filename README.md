@@ -16,9 +16,6 @@ In this tutorial, we will do the following:
 
 First, we will run a model trained on Shakespeare text to generate some text that sounds like Shakespeare, using the code from the [TensorFlow.js](https://www.tensorflow.org/js/) [lstm text generation example,](https://github.com/tensorflow/tfjs-examples/tree/master/lstm-text-generation) which illustrates how to use and train a LSTM model to  generate random text based on the patterns in a text corpus such as Shakepeare or your own Facebook Posts.
 
-
-
-
 ### Setting up the Code
 
 Download the code from this repository:
