@@ -67,7 +67,10 @@ Some examples of how types of RNNs:
 [Chat replies for chat bots](https://github.com/tensorlayer/seq2seq-chatbot):
 ![Chat reply rnn](https://camo.githubusercontent.com/9e88497fcdec5a9c716e0de5bc4b6d1793c6e23f/687474703a2f2f73757269796164656570616e2e6769746875622e696f2f696d672f736571327365712f73657132736571322e706e67)
 
-[Human Activity Recognition from a sequence of poses](https://github.com/stuarteiffert/RNN-for-Human-Activity-Recognition-using-2D-Pose-Input)
+[Melody generation with Melody RNN:](https://magenta.tensorflow.org/music-vae)
+![Sequence of Notes](https://magenta.tensorflow.org/assets/music_vae/architecture.png)
+
+[Human Activity Recognition from a sequence of poses](https://github.com/stuarteiffert/RNN-for-Human-Activity-Recognition-using-2D-Pose-Input), which can classify JUMPING, JUMPING_JACKS, BOXING, WAVING_2HANDS, WAVING_1HAND, CLAPPING_HANDS.
 
 ![Animated Gif of Poses](https://github.com/stuarteiffert/RNN-for-Human-Activity-Recognition-using-2D-Pose-Input/raw/master/images/boxing_all_views.gif.png)
 
