@@ -8,9 +8,9 @@ This tutorial will walk you through how to use text based machine-learning model
 
 In this tutorial, we will do the following:
 1. Run an existing pre-trained [RNN](http://karpathy.github.io/2015/05/21/rnn-effectiveness/) model to generate some text, and see the output.  
-2. Learn how to train our own models based on a custom text corpus.  
-3. Learn how to gather text for that corpus to train. 
-4. We will see how to use a state of the art text generation model, GPT-2, with Runway.
+2. Learn at a high level what a Recurrent Neural Network is and how it is used.
+3. Learn how to train our own models based on a custom text corpus.  
+4. Learn how to gather text for that corpus to train on. 
 
 ## Let's use a model trained on Shakespear text to generate some text
 
