@@ -22,9 +22,9 @@ Runway can be used to generate text using gpt-2, a state of the art text generat
 
 If runway is running, and gpt-2 is active, the script below can be run:
 
-    node gen_text_gpt2.js "I'm so tired from life."
+    node gen_text_gpt2.js "Everybody betrayed me. I'm fed up with this world."
 
-Which will generate text with the prompt "I'm so tired from Life."
+Which will generate text with the prompt "Everybody betrayed me. I'm fed up with this world."
 
 ### Setting up the Code
 
