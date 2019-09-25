@@ -30,7 +30,7 @@ Which will generate text with the prompt "Everybody betrayed me. I'm fed up with
 
 Download the code from this repository:
 
-    git clone https://github.com/oveddan/ml-text-gen-tutorial.git
+    git clone https://github.com/oveddan/ml-text.git
 
 Install yarn.  On **mac,** this can be done with:
 

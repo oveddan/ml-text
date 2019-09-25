@@ -3,9 +3,10 @@ const fetch = require('node-fetch');
 
 async function genTextUsingRunwayGpt2(inputString) {
   const inputs = {
-    "prompt": inputString
+    "prompt": inputString,
+    "seed": 357,
   };
-  
+
   const response = await fetch('http://localhost:8000/query', {
       method: 'POST',
       headers: {
