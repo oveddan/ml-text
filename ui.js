@@ -19,7 +19,7 @@
 import * as tf from '@tensorflow/tfjs';
 import * as tfvis from '@tensorflow/tfjs-vis';
 
-import {TEXT_DATA_URLS, TextData} from './data';
+import {TEXT_DATA_URLS, TextData} from './lstm/data';
 import {SaveableLSTMTextGenerator} from './index';
 
 // UI controls.

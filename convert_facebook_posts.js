@@ -1,8 +1,8 @@
-import * as fs from 'fs';
-import * as os from 'os';
-import * as path from 'path';
+const fs = require('fs');
+const path = require('path');
+const { mkdirp} = require('./util');
 
-import * as argparse from 'argparse';
+const argparse = require('argparse');
 
 function parseArgs() {
   const parser = argparse.ArgumentParser({
@@ -12,9 +12,9 @@ function parseArgs() {
     type: 'string',
     help: 'Path of the posts json file to convert'
   });
-  parser.addArgument('outputFile', {
+  parser.addArgument('outputFolder', {
     type: 'string',
-    help: 'Output text file name'
+    help: 'Output folder to save files to'
   });
   return parser.parseArgs();
 }
@@ -43,33 +43,25 @@ function getNumberOfCharacters(arrayOfStrings) {
   }, 0)
 }
 
-function convertPostsToCorpus(posts, delimiter) {
-  const asString = posts.join(delimiter);
-
-  return asString;
-}
-
 async function main() {
   const args = parseArgs();
 
-  const { inputJsonFile, outputFile } = args;
+  const { inputJsonFile, outputFolder } = args;
 
   const fullInputPath = path.join(__dirname, inputJsonFile);
 
   const posts = loadJsonPosts(fullInputPath);
 
+  const postsTexts = extractPostsText(posts);
 
-  const postsOfText = extractPostsText(posts);
+  const fullOutputFolderPath = path.join(__dirname, 'data', outputFolder);
+  console.log('saving posts to ' + fullOutputFolderPath );
+  await mkdirp(fullOutputFolderPath);
 
-  console.log(`creating corpus from ${postsOfText.length} with ${getNumberOfCharacters(postsOfText)} characters`);
-
-  const asCorpus = convertPostsToCorpus(postsOfText, '|');
-
-  const fullOutputPath = path.join(__dirname, outputFile);
-
-  console.log('saving corpus to ' + fullOutputPath);
-
-  fs.writeFileSync(fullOutputPath, asCorpus);
+  for(let i = 0; i < postsTexts.length; i++) {
+    const fullOutputPath = path.join(fullOutputFolderPath , i + '.txt');
+    fs.writeFileSync(fullOutputPath, postsTexts[i]);
+  }
 }
 
 main();

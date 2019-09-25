@@ -1,9 +1,9 @@
-const fs = require('fs').promises;
+const fs = require('fs');
 const puppeteer = require('puppeteer');
 const {join} = require('path');
 const striptags = require('striptags');
 
-const {fileExists} = require('./util');
+const { fileExists,  mkdirp} = require('./util');
 const argparse = require('argparse');
 
 const toCorpus = (htmlParagraphs) => {
@@ -13,9 +13,10 @@ const toCorpus = (htmlParagraphs) => {
 };
 
 const last = (elements) => elements[elements.length - 1];
-const toTitle = (link) => last(link.split('/'))
+const toTitle = (link) => last(link.split('/')).replace(/%2/g, "");
 
 const contentsDir = join(__dirname, 'data/wikihow_results');
+
 
 const filePath = (link) => {
   const title = toTitle(link);
@@ -50,6 +51,9 @@ async function getTextContentFromParagraphsOnPage(page) {
 }
 
 async function getSearchResults(browser, term, pageNumber) {
+  // make sure directory to save contents to exists
+  await mkdirp(contentsDir);
+
   console.log('searching ', term);
   const searchUrl =
       `https://www.wikihow.com/wikiHowTo?search=${term}&start=${pageNumber * 10}`
@@ -58,7 +62,7 @@ async function getSearchResults(browser, term, pageNumber) {
 
   await page.goto(searchUrl)
   
-
+  console.log('getting links on the page.');
   const links = await getLinksOnPage(page);
   
   console.log('scraping pages at links', links);
@@ -79,9 +83,8 @@ async function getSearchResults(browser, term, pageNumber) {
 
     const asText = toCorpus(paragraphs);
 
-    console.log('scraped contents, saving to ', savePath);
-    await fs.writeFile(savePath, asText);
-
+    console.log('saving to', savePath);
+    fs.writeFileSync(savePath, asText);
   }
 
   await page.close();
@@ -95,11 +98,7 @@ function parseArgs() {
     type: 'string',
     help: 'Term to search'
   });
-  // parser.addArgument('resultsPerPage', {
-  //   type: 'int',
-  //   help: 'Number of search results per page'
-  // });
-
+  
   return parser.parseArgs();
 }
 
@@ -111,6 +110,8 @@ async function main() {
   });
 
   await getSearchResults(browser, args.searchTerm, 0);
+
+  await browser.close();
 }
 
 main();

@@ -48,6 +48,10 @@ function parseArgs() {
     defaultValue: 200,
     help: 'Length of the text to generate.'
   });
+  parser.addArgument('--seedText', {
+    type: 'string',
+    help: 'Seed text to use.  If null, starts with random text.'
+  });
   parser.addArgument('--temperature', {
     type: 'float',
     defaultValue: 0.5,
@@ -67,6 +71,15 @@ function parseArgs() {
   return parser.parseArgs();
 }
 
+function getSeed(seedText, textData) {
+  if (!seedText) {
+    return textData.getRandomSlice(); 
+  } else {
+    const seedIndeces = textData.textToIndices(seedText);
+    return [seedText, seedIndeces];
+  }
+}
+
 async function main() {
   const args = parseArgs();
 
@@ -79,7 +92,8 @@ async function main() {
   }
 
   // Load the model.
-  const model = await tf.loadLayersModel(`file://${args.modelJSONPath}`);
+  const fullModelPath = path.join(__dirname, 'models', args.modelJSONPath, '/model.json')
+  const model = await tf.loadLayersModel(`file://${fullModelPath}`);
 
   const sampleLen = model.inputs[0].shape[1];
 
@@ -90,8 +104,8 @@ async function main() {
   const textData = new TextData('text-data', text, sampleLen, args.sampleStep);
 
   // Get a seed text from the text data object.
-  const [seed, seedIndices] = textData.getRandomSlice();
-  
+  const [seed, seedIndices] = getSeed(args.seedText, textData);
+
   console.log(`Seed text:\n"${seed}"\n`);
 
   const generated = await generateText(

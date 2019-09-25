@@ -27,8 +27,8 @@ import * as tf from '@tensorflow/tfjs';
 
 import * as argparse from 'argparse';
 
-import {maybeDownload, TextData, TEXT_DATA_URLS} from './data';
-import {createModel, compileModel, fitModel, generateText} from './model';
+import {TextData} from './data';
+import {createModel, compileModel, fitModel} from './model';
 
 function parseArgs() {
   const parser = argparse.ArgumentParser({
@@ -89,13 +89,13 @@ function parseArgs() {
     defaultValue: 120,
     help: 'Length of the sampled text to display after each epoch of training.'
   });
-  parser.addArgument('--savePath', {
+  parser.addArgument('--save', {
     type: 'string',
-    help: 'Path to which the model will be saved (optional)'
+    help: 'Name of model to save; will be saved within the `models` folder'
   });
   parser.addArgument('--debugAtEpoch', {
     type: 'int',
-    defaultValue: 1,
+    defaultValue: 5,
     help: 'Test inference every x epochs'
   });
   parser.addArgument('--lstmLayerSize', {
@@ -148,6 +148,8 @@ async function main() {
 
   const DISPLAY_TEMPERATURES = [0.25, 0.5, 0.75];
 
+  const fullSavePath = args.save ? path.join(__dirname, 'models', args.save) : null;
+
   let epochCount = 0;
   let startTime = 0;
   await fitModel(
@@ -162,27 +164,27 @@ async function main() {
         },
         onEpochEnd: async () => {
           console.log('time to complete epoch:', (new Date().getTime() - startTime) / 1000);
-          if (args.savePath != null && args.savePath.length > 0) {
-            console.log(`saving to ${args.savePath}`);
-            model.save(`file://${args.savePath}`);
+          if (fullSavePath) {
+            console.log(`saving to ${fullSavePath}`);
+            model.save(`file://${fullSavePath}`);
           }
         },
         onTrainEnd: async () => {
-          // if ((epochCount - 1) % debugAtEpoch === 0) {
-          //   DISPLAY_TEMPERATURES.forEach(async temperature => {
-          //     const generated = await generateText(
-          //         model, textData, seedIndices, args.displayLength, temperature);
-          //     console.log(
-          //         `Generated text (temperature=${temperature}):\n` +
-          //         `"${generated}"\n`);
-          //   });
-          // }
+          if ((epochCount - 1) % debugAtEpoch === 0) {
+            DISPLAY_TEMPERATURES.forEach(async temperature => {
+              const generated = await generateText(
+                  model, textData, seedIndices, args.displayLength, temperature);
+              console.log(
+                  `Generated text (temperature=${temperature}):\n` +
+                  `"${generated}"\n`);
+            });
+          }
         }
       });
 
-  if (args.savePath != null && args.savePath.length > 0) {
-    await model.save(`file://${args.savePath}`);
-    console.log(`Saved model to ${args.savePath}`);
+  if (fullSavePath) {
+    await model.save(`file://${fullSavePath}`);
+    console.log(`Saved model to ${fullSavePath}`);
   }
 }
 
