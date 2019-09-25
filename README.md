@@ -16,16 +16,6 @@ In this tutorial, we will do the following:
 
 First, we will run a model trained on Shakespeare text to generate some text that sounds like Shakespeare, using the code from the [TensorFlow.js](https://www.tensorflow.org/js/) [lstm text generation example,](https://github.com/tensorflow/tfjs-examples/tree/master/lstm-text-generation) which illustrates how to use and train a LSTM model to  generate random text based on the patterns in a text corpus such as Shakepeare or your own Facebook Posts.
 
-## Trying out gpt-2 in runway.ml 
-
-Runway can be used to generate text using gpt-2, a state of the art text generation model.
-
-If runway is running, and gpt-2 is active, the script below can be run:
-
-    node gen_text_gpt2.js "Everybody betrayed me. I'm fed up with this world."
-
-Which will generate text with the prompt "Everybody betrayed me. I'm fed up with this world."
-
 ### Setting up the Code
 
 Download the code from this repository:
@@ -49,6 +39,16 @@ Now, let's generate some text:
       --temperature 0.6
 
 What the above command did, was use an LSTM model trained on the text in [corpus/shakespeare.txt](corpus/shakespeare.txt) to generate some text of length 250, that the model predicted which characters should come after some random text. Everything is run on your computer using Tensorflow.js in Node.
+
+## Trying out gpt-2 in runway.ml 
+
+Runway can be used to generate text using gpt-2, a state of the art text generation model.
+
+If runway is running, and gpt-2 is active, the script below can be run:
+
+    node gen_text_gpt2.js "Everybody betrayed me. I'm fed up with this world."
+
+Which will generate text with the prompt "Everybody betrayed me. I'm fed up with this world."
 
 ## What is an LSTM RNN?
 
