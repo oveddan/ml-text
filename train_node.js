@@ -20,15 +20,13 @@
  */
 
 import * as fs from 'fs';
-import * as os from 'os';
 import * as path from 'path';
 import * as tf from '@tensorflow/tfjs';
-;
 
 import * as argparse from 'argparse';
 
 import {TextData} from './data';
-import {createModel, compileModel, fitModel} from './model';
+import {createModel, compileModel, fitModel, generateText} from './model';
 
 function parseArgs() {
   const parser = argparse.ArgumentParser({
@@ -37,11 +35,13 @@ function parseArgs() {
   parser.addArgument('textFile', {
     type: 'string',
     // choices: Object.keys(TEXT_DATA_URLS),
-    help: 'Path of corpus file'
+    help: "Path of corpus file, located within the './data' folder"
   });
   parser.addArgument('--gpu', {
     action: 'storeTrue',
-    help: 'Use GPU for training.'
+    help: 'Use GPU with node.gl for training.  This offers a slight ' + 
+      'increase in performance over cpu, but is experimental ' + 
+      'and can often fail.'
   });
   parser.addArgument('--cuda', {
     action: 'storeTrue',
@@ -91,7 +91,7 @@ function parseArgs() {
   });
   parser.addArgument('--save', {
     type: 'string',
-    help: 'Name of model to save; will be saved within the `models` folder'
+    help: "Name of model to save; will be saved within the './models' folder"
   });
   parser.addArgument('--debugAtEpoch', {
     type: 'int',

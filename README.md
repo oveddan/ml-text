@@ -18,15 +18,25 @@ First, we will run a model trained on Shakespeare text to generate some text tha
 
 ### Setting up the Code
 
+#### Install yarn
+
+On **mac,** if you don't have [homebrew](https://brew.sh/) installed, install it with:
+
+    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+Then install yarn:
+
+    brew install yarn
+
+On windows, [follow the instructions here to install yarn](https://yarnpkg.com/lang/en/docs/install/#windows-stable)
+
 Download the code from this repository:
 
     git clone https://github.com/oveddan/ml-text.git
 
-Install yarn.  On **mac,** this can be done with:
+Go into the code folder:
 
-    brew install yarn
-
-On windows, [follow the instructions here](https://yarnpkg.com/lang/en/docs/install/#windows-stable)
+    cd ml-text
 
 Install the dependencies:
 
@@ -40,25 +50,31 @@ Now, let's generate some text:
 
 What the above command did, was use an LSTM model trained on the text in [data/shakespeare.txt](data/shakespeare.txt) to generate some text of length 250, that the model predicted which characters should come after some random text. Everything is run on your computer using Tensorflow.js in Node.
 
+Internally, this ran the code in [gen_node.js](gen_node.js), so refer to that file to get a better sense of how to load an lstm model and generate text.
+
 ## Trying out gpt-2 in runway.ml 
 
-Runway can be used to generate text using gpt-2, a state of the art text generation model.
+Runway.ml can be used to generate text using gpt-2, a state of the art text generation model.
 
-If runway is running, and gpt-2 is active, the script below can be run:
+If Runway is running, and gpt-2 is active, the script below can be run:
 
     node gen_text_gpt2.js "Everybody betrayed me. I'm fed up with this world."
+
+Check out the code in [gen_text_gpt2.js](gen_text_gpt2.js) to see how this works.
 
 Which will generate text with the prompt "Everybody betrayed me. I'm fed up with this world."
 
 ## What is an LSTM RNN?
 
-An LSTM is a type of [Recurrrent Neural Network,](http://karpathy.github.io/2015/05/21/rnn-effectiveness/) which is a type of machine learning model designed to work with **sequences of information.**
+An LSTM is a type of [Recurrent Neural Network,](http://karpathy.github.io/2015/05/21/rnn-effectiveness/) which is a type of machine learning model designed to work with **sequences of information.**
 
 ![RNN Diagrams](https://karpathy.github.io/assets/rnn/diags.jpeg)
 
 > What makes Recurrent Networks so special? A glaring limitation of Vanilla Neural Networks (and also Convolutional Networks) is that their API is too constrained: they accept a fixed-sized vector as input (e.g. an image) and produce a fixed-sized vector as output (e.g. probabilities of different classes). 
 
-Some examples of how types of RNNs:
+~ Andrej Karpathy in [The Unreasonable Effectiveness of Recurrent Neural Networks](http://karpathy.github.io/2015/05/21/rnn-effectiveness/)
+
+Some examples of types of RNNs:
 
 [Text translation,](https://www.tensorflow.org/beta/tutorials/text/nmt_with_attention) where a sequence of words from one language is translated into a sequence of words in another language:
 
@@ -127,16 +143,16 @@ To start a training job, enter command lines such as:
 
 ```sh
 yarn train shakespeare.txt \
-    --lstmLayerSize 128,128 \
-    --epochs 120 \
+    --lstmLayerSize 100 \
+    --epochs 10 \
     --save my-shakespear-model
 ```
 
 - The first argument to `yarn train` (`shakespeare.txt`) specifies what text corpus to train the model on. See the console output of `yarn train --help` for a set
   of supported text data.  It grabs the file **from the folder** `./data` . So if the argument `shakespeare.txt` is used, the file should be located at `./data/shakespeare.txt`
-- The argument `--lstmLayerSize 128,128` specifies that the next-character
-  prediction model should contain two LSTM layers stacked on top of each other,
-  each with 128 units.
+- The argument `--lstmLayerSize 100` specifies that the next-character
+  prediction model should one LSTM layer with 100 units.  This can be can be a single number or an array of numbers separated by commas (E.g., "256", "256,128").  If
+  this is a value with commas and multiple numbers, it will have a layer for each of those numbers stacked on top of each other.
 - The flag `--epochs` is used to specify the number of training epochs.
 - The argument `--save ...` lets the training script save the model at the
   specified path within the folder `./models`.  For example `--save my-facebook-posts` would save a model at `./models/my-facebook-posts`
@@ -224,3 +240,29 @@ After you have trained a model, you can run a sample script to post to facebook 
 
     yarn post_to_facebook_lstm shakespeare.txt shakespeare \
       --temperature 0.7
+
+
+## Some tips for training
+
+**These tips are pulled from [Andrej Karpathy's char-rnn Readme](https://github.com/karpathy/char-rnn)**, with some slight modifications:
+
+**Dataset sizes:** Note that if your data is too small (1MB is already considered very small) the RNN won't learn very effectively. Remember that it has to learn everything completely from scratch. Conversely if your data is large (more than about 2MB), feel confident to increase `lstmLayerSize` and train a bigger model. It will work significantly better. For example with 6MB you can easily go up to `lstmLayerSize` 300 or even more. 
+
+**Temperature:** An important parameter you may want to play with is `temperature` which takes a number in range (0, 1] (0 not included), default = 1. Lower temperature will cause the model to make more likely, but also more boring and conservative predictions. Higher temperatures cause the model to take more chances and increase diversity of results, but at a cost of more mistakes.
+
+### Monitoring Validation Loss vs. Training Loss
+If you're somewhat new to Machine Learning or Neural Networks it can take a bit of expertise to get good models. The most important quantity to keep track of is the difference between your training loss and the validation loss. In particular:
+
+* If your training loss is much lower than validation loss then this means the network might be overfitting. Solutions to this are to decrease your network size, or to increase dropout. For example you could try dropout of 0.5 and so on.
+* If your training/validation loss are about equal then your model is underfitting. Increase the size of your model (either number of layers or the raw number of neurons per layer)
+
+### Approximate number of parameters
+
+The most parameters that control the model is the `lstmLayerSize`. I would advise that you always use 2/3 layers, by specifying 2/3 values with comma separating them. The size of each layer can be adjusted based on how much data you have. The two important quantities to keep track of here are:
+
+* The number of parameters in your model. This is printed when you start training.
+* The size of your dataset. 1MB file is approximately 1 million characters.
+
+These two should be about the same order of magnitude. It's a little tricky to tell. Here is an example:
+
+* I have a 100MB dataset and I'm using the default parameter settings (which currently prints 100K parameters). My data size is significantly larger (100 mil >> 0.1 mil), so I expect to heavily underfit. I am thinking I can comfortably afford to make `lstmLayerSize` larger.

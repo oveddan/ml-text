@@ -26,7 +26,7 @@ import * as argparse from 'argparse';
 
 import * as tf from '@tensorflow/tfjs';
 
-import {maybeDownload, TextData, TEXT_DATA_URLS} from './data';
+import {TextData} from './data';
 import {generateText} from './model';
 
 function parseArgs() {
